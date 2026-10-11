@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Custom Party Heads Up</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #121212;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+            user-select: none;
+        }
+        .screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            box-sizing: border-box;
+            padding: 20px;
+        }
+        .active { display: flex; }
+        h1 { font-size: 2.5rem; margin-bottom: 20px; color: #4ade80; }
+        .btn {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.5rem;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        #timer { font-size: 2rem; font-weight: bold; margin-bottom: 10px; color: #f87171; }
+        #word-display { font-size: 3.5rem; font-weight: bold; margin: 40px 0; word-break: break-word; line-height: 1.2; }
+        .controls {
+            display: flex;
+            width: 100%;
+            height: 40%;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+        }
+        .control-btn {
+            flex: 1;
+            border: none;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            opacity: 0.85;
+        }
+        .control-btn:active { opacity: 1; }
+        .correct { background-color: #22c55e; }
+        .pass { background-color: #ef4444; }
+        #score-summary { font-size: 1.5rem; line-height: 1.6; margin-bottom: 30px; }
+    </style>
+</head>
+<body>
+
+    <!-- LOBBY SCREEN -->
+    <div id="lobby-screen" class="screen active">
+        <h1>Custom Heads Up!</h1>
+        <p style="margin-bottom: 30px; color: #a3a3a3;">Pass the phone to the guesser. Hold it up or have a friend tap the screen!</p>
+        <button class="btn" onclick="startGame()">Start Game</button>
+    </div>
+
+    <!-- GAMEPLAY SCREEN -->
+    <div id="game-screen" class="screen">
+        <div id="timer">60</div>
+        <div id="word-display">READY?</div>
+        <div class="controls">
+            <button class="control-btn pass" onclick="handlePass()">PASS</button>
+            <button class="control-btn correct" onclick="handleCorrect()">CORRECT</button>
+        </div>
+    </div>
+
+    <!-- GAME OVER SCREEN -->
+    <div id="gameover-screen" class="screen">
+        <h1>Time's Up!</h1>
+        <div id="score-summary"></div>
+        <button class="btn" onclick="resetToLobby()">Play Again</button>
+    </div>
+
+    <script>
+        // --- ADD YOUR CUSTOM WORD LIST HERE ---
+        const masterWordList = ["Apple", "Banana", "Elephant", "Guitar", "Astronaut", "Pizza", "Campfire", "Hollywood", "Subway", "Doctor", "Database", "Superhero"];
+        
+        let gameWords = [];
+        let currentWordIndex = 0;
+        let score = 0;
+        let timeLeft = 60;
+        let timerInterval;
+        let skippedWords = [];
+        let guessedWords = [];
+
+        function shuffle(array) {
+            return array.sort(() => Math.random() - 0.5);
+        }
+
+        function startGame() {
+            gameWords = shuffle([faith, family, fellowship, vision, worship, partners, Bible-centered, community-building, Kingdom-minded, doctrine, eternity, holy, heaven, prayer, service, Spirit-filled, Kingdom of God, Jesus, Trinity, Holy Spirit, Father, Lord, Savior, Bible, Scripture, Word of God, gospel, good news, church, ministry, mission, outreach, submission, discipleship, witness, evangelism, salvation, repentance, forgiveness, grace, mercy, love, hope, peace, joy, truth, wisdom, obedience, trust, belief, praise, redemption, blessing, miracles, sonship, fellowship, healing, baptism, communion, cross, Kingdom, eternal life, new birth, covenant, relationship, sin, redemption, righteousness, holiness, Kingdom message, Kingdom citizen, Kingdom purpose, Kingdom principles, Kingdom education, Kingdom movement, Kingdom Voice, Bible study, New Partners, The ROCK Way, disciples, spiritual growth, leadership, stewardship, giving, tithes, offerings, loyalty, accountability, excellence, leadership, shepherd, children, youth, young adults, nations, apostle, pastor, elder, deacon, servant]);
+            currentWordIndex = 0;
+            score = 0;
+            timeLeft = 60;
+            guessedWords = [];
+            skippedWords = [];
+            
+            document.getElementById('timer').innerText = timeLeft;
+            changeScreen('lobby-screen', 'game-screen');
+            nextWord();
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').innerText = timeLeft;
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function nextWord() {
+            if (currentWordIndex < gameWords.length) {
+                document.getElementById('word-display').innerText = gameWords[currentWordIndex];
+            } else {
+                endGame();
+            }
+        }
+
+        function handleCorrect() {
+            score++;
+            guessedWords.push(gameWords[currentWordIndex]);
+            currentWordIndex++;
+            nextWord();
+        }
+
+        function handlePass() {
+            skippedWords.push(gameWords[currentWordIndex]);
+            currentWordIndex++;
+            nextWord();
+        }
+
+        function endGame() {
+            clearInterval(timerInterval);
+            
+            let summaryHTML = `<p style="font-size: 2.5rem; color: #4ade80; font-weight:bold;">Score: ${score}</p>`;
+            if(guessedWords.length > 0) {
+                summaryHTML += `<p><strong>Got 'em:</strong> ${guessedWords.join(', ')}</p>`;
+            }
+            if(skippedWords.length > 0) {
+                summaryHTML += `<p style="color: #a3a3a3;"><strong>Passed:</strong> ${skippedWords.join(', ')}</p>`;
+            }
+            
+            document.getElementById('score-summary').innerHTML = summaryHTML;
+            changeScreen('game-screen', 'gameover-screen');
+        }
+
+        function resetToLobby() {
+            changeScreen('gameover-screen', 'lobby-screen');
+        }
+
+        function changeScreen(hideId, showId) {
+            document.getElementById(hideId).classList.remove('active');
+            document.getElementById(showId).classList.add('active');
+        }
+    </script>
+</body>
+</html>
