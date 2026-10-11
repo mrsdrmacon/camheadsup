@@ -31,7 +31,9 @@
             padding: 20px;
         }
         .active { display: flex; }
-        h1 { font-size: 2.5rem; margin-bottom: 20px; color: #4ade80; }
+        h1 { font-size: 2.2rem; margin-bottom: 20px; color: #4ade80; line-height: 1.3; font-weight: bold; }
+        
+        /* Unified Button Styling for Size and Shape */
         .btn {
             background-color: #3b82f6;
             color: white;
@@ -42,29 +44,27 @@
             cursor: pointer;
             font-weight: bold;
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            text-transform: uppercase;
         }
-        #timer { font-size: 2rem; font-weight: bold; margin-bottom: 10px; color: #f87171; }
+        
+        #timer { font-size: 2.5rem; font-weight: bold; margin-bottom: 10px; color: #f87171; }
         #word-display { font-size: 3.5rem; font-weight: bold; margin: 40px 0; word-break: break-word; line-height: 1.2; }
+        
+        /* Centered button controls matching Lobby setup */
         .controls {
             display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
             width: 100%;
-            height: 40%;
-            position: absolute;
-            bottom: 0;
-            left: 0;
         }
-        .control-btn {
-            flex: 1;
-            border: none;
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: white;
-            cursor: pointer;
-            opacity: 0.85;
-        }
-        .control-btn:active { opacity: 1; }
-        .correct { background-color: #22c55e; }
-        .pass { background-color: #ef4444; }
+        
+        /* Specific action colors applying over basic button style */
+        .btn.pass { background-color: #ef4444; }
+        .btn.correct { background-color: #22c55e; }
+        
+        .btn:active { opacity: 0.85; }
         #score-summary { font-size: 1.2rem; line-height: 1.6; margin-bottom: 30px; max-height: 50vh; overflow-y: auto; width: 100%; padding: 0 10px; box-sizing: border-box; }
     </style>
 </head>
@@ -72,8 +72,8 @@
 
     <!-- LOBBY SCREEN -->
     <div id="lobby-screen" class="screen active">
-        <h1>Custom Heads Up!</h1>
-        <p style="margin-bottom: 30px; color: #a3a3a3;">Pass the phone to the guesser. Hold it up or have a friend tap the screen!</p>
+        <h1>Special Clergy Appreciation Month Game Head's Up!</h1>
+        <p style="margin-bottom: 40px; color: #a3a3a3; font-size: 1.2rem; max-width: 600px; line-height: 1.5;">Form teams of 4 or 5. One person gives the clues and taps the screen. The team with the most correct in 1 minute wins a prize!</p>
         <button class="btn" onclick="startGame()">Start Game</button>
     </div>
 
@@ -82,8 +82,8 @@
         <div id="timer">60</div>
         <div id="word-display">READY?</div>
         <div class="controls">
-            <button class="control-btn pass" onclick="handlePass()">PASS</button>
-            <button class="control-btn correct" onclick="handleCorrect()">CORRECT</button>
+            <button class="btn pass" onclick="handlePass()">PASS</button>
+            <button class="btn correct" onclick="handleCorrect()">CORRECT</button>
         </div>
     </div>
 
@@ -95,7 +95,6 @@
     </div>
 
     <script>
-        // Your custom Clergy Appreciation word deck properly formatted as text strings
         const masterWordList = [
             "faith", "family", "fellowship", "vision", "worship", "partners", "Bible-centered", 
             "community-building", "Kingdom-minded", "doctrine", "eternity", "holy", "heaven", 
@@ -123,7 +122,6 @@
         let guessedWords = [];
 
         function shuffle(array) {
-            // Making a shallow copy first to leave the original list intact
             return [...array].sort(() => Math.random() - 0.5);
         }
 
